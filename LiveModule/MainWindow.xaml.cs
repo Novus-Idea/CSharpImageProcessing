@@ -75,6 +75,8 @@ namespace LiveModule
         {
             if(capture.Read(frame))
             {
+                UpdateCrop();
+
                 bitmap = frame.ToBitmapSource();
                 image.Source = bitmap;
 
@@ -104,8 +106,6 @@ namespace LiveModule
                 croppedBitmap = new CroppedBitmap(bitmap, new Int32Rect((int)cropRect.X, (int)cropRect.Y, (int)cropRect.Width, (int)cropRect.Height));
 
                 croppedImage.Source = croppedBitmap;
-
-                UpdateCrop();
             }
         }
 
@@ -134,13 +134,40 @@ namespace LiveModule
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            // Crop the image using the cropMask rectangle
-            var cropRect = new System.Windows.Rect( Canvas.GetLeft(cropMask),
-                               Canvas.GetTop(cropMask),
-                               cropMask.Width,
-                               cropMask.Height);
+            // Save both the original and cropped images
+            var saveFileDialog = new Microsoft.Win32.SaveFileDialog
+            {
+                Filter = "JPEG Image|*.jpg",
+                Title = "Save an Image File"
+            };
 
-            var croppedImage = new CroppedBitmap(bitmap, new Int32Rect((int)cropRect.X, (int)cropRect.Y, (int)cropRect.Width, (int)cropRect.Height));
+            if(saveFileDialog.ShowDialog() == true)
+            {
+                var encoder = new JpegBitmapEncoder();
+                encoder.Frames.Add(BitmapFrame.Create(bitmap));
+                using(var fileStream = new System.IO.FileStream(saveFileDialog.FileName, System.IO.FileMode.Create))
+                {
+                    encoder.Save(fileStream);
+                }
+
+                var croppedSaveFileDialog = new Microsoft.Win32.SaveFileDialog
+                {
+                    Filter = "JPEG Image|*.jpg",
+                    Title = "Save an Image File"
+                };
+
+                if(croppedSaveFileDialog.ShowDialog() == true)
+                {
+                    var croppedEncoder = new JpegBitmapEncoder();
+                    croppedEncoder.Frames.Add(BitmapFrame.Create(croppedBitmap));
+                    using(var fileStream = new System.IO.FileStream(croppedSaveFileDialog.FileName, System.IO.FileMode.Create))
+                    {
+                        croppedEncoder.Save(fileStream);
+                    }
+                }
+
+                MessageBox.Show("Images saved successfully!");
+            }
         }
     }
 }

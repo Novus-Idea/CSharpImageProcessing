@@ -19,13 +19,13 @@
             </Grid.ColumnDefinitions>
             <Grid Grid.Column="0">
                 <!-- Background live view -->
-                <Image x:Name="image" Stretch="UniformToFill"/>
+                <Image x:Name="image" Stretch="Uniform"/>
                 <!-- Foreground crop mask -->
-                <Rectangle x:Name="cropMask" Stroke="Red" StrokeThickness="2" Visibility="Visible"/>
+                <Rectangle x:Name="cropMask" Stroke="Green" StrokeThickness="2" Visibility="Visible"/>
             </Grid>
             <Grid Grid.Column="1">
                 <!--Cropped iamge view -->
-                <Image x:Name="croppedImage" Stretch="UniformToFill"/>
+                <Image x:Name="croppedImage" Stretch="None" ClipToBounds="True"/>
             </Grid>
         </Grid>
         <Grid Grid.Row="1">
